@@ -3,14 +3,17 @@
 #include <pthread.h>
 #include <unistd.h>
 
-// Bibliotecas do Template (Nomes corrigidos baseados nas fotos)
+// Includes do Template
 #include "Includes/Logger.h"
 #include "Includes/obfuscate.h"
-#include "Includes/Utils.hpp" 
-#include "KittyMemory/MemoryPatch.hpp" 
+#include "Includes/Utils.hpp"
+#include "KittyMemory/MemoryPatch.hpp"
 #include "Menu/Menu.hpp"
 
-// Define a Lib do Jogo
+// 1. CORREÇÃO DE NAMESPACE: Isso resolve o erro do "ProcMap"
+using namespace KittyMemory;
+
+// Lib do Jogo
 #define targetLibName OBFUSCATE("libil2cpp.so")
 
 struct MemPatches {
@@ -53,18 +56,19 @@ void Changes(JNIEnv *env, jclass clazz, jobject obj, jint featNum, jstring featN
     }
 }
 
-// --- CONFIGURAÇÃO DOS HACKS (32-BITS) ---
+// --- THREAD DE INJEÇÃO (CORRIGIDA) ---
 void *hack_thread(void *) {
-    ProcMap il2cppMap;
-    do {
-        il2cppMap = KittyMemory::getLibraryMap(targetLibName);
-        sleep(1);
-    } while (!il2cppMap.isValid());
-    uintptr_t il2cppBase = il2cppMap.startAddress;
-
-    // OFFSETS PARA ARMEABI-V7A (32-BIT)
-    // Verifique se esses offsets batem com seu dump 32-bit.
     
+    // 2. CORREÇÃO DA BUSCA: Usamos getLibraryBase que é universal
+    // Retorna o endereço direto (número) em vez de um Struct complexo
+    uintptr_t il2cppBase = 0;
+    
+    do {
+        il2cppBase = getLibraryBase(targetLibName);
+        sleep(1);
+    } while (il2cppBase == 0);
+
+    // --- OFFSETS (32-BITS) ---
     // God Mode (Offset: 0x7BC5C8)
     gPatches.godMode = MemoryPatch::createWithHex(il2cppBase + 0x7BC5C8, "1E FF 2F E1");
 
