@@ -1,22 +1,28 @@
-name: Compilar Mod Menu
+name: Compilar Mod Menu V7a
 
 on: [push, workflow_dispatch]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    
+
     steps:
     - uses: actions/checkout@v4
-    
-    - name: Configurar Android NDK
-      uses: android-actions/setup-android@v2
-    
+
+    # --- CORREÇÃO: Instalar o NDK corretamente ---
+    - name: Configurar NDK
+      uses: nttld/setup-ndk@v1
+      with:
+        ndk-version: r25c
+        add-to-path: true
+
+    # --- Compilação ---
     - name: Compilar Biblioteca (.so)
       run: |
         cd app/src/main
         ndk-build NDK_PROJECT_PATH=. APP_BUILD_SCRIPT=./jni/Android.mk APP_APPLICATION_MK=./jni/Application.mk
-        
+
+    # --- Enviar o arquivo para você baixar ---
     - name: Upload do Arquivo Pronto
       uses: actions/upload-artifact@v4
       with:
