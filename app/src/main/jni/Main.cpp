@@ -2,7 +2,7 @@
 #include <pthread.h>
 #include "Includes/Logger.h"
 #include "Includes/obfuscate.h"
-#include "KittyMemory/MemoryPatch.h"
+#include "MemoryPatch.h"
 #include "Menu/Menu.hpp"
 
 // Define a Lib do Jogo
