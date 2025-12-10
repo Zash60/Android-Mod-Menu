@@ -2,18 +2,16 @@
 #include <errno.h>
 #include <pthread.h>
 #include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-// Includes do Template
 #include "Includes/Logger.h"
 #include "Includes/obfuscate.h"
-#include "Includes/Utils.hpp"
 #include "KittyMemory/MemoryPatch.hpp"
 #include "Menu/Menu.hpp"
 
-// 1. CORREÇÃO DE NAMESPACE: Isso resolve o erro do "ProcMap"
-using namespace KittyMemory;
-
-// Lib do Jogo
+// Define a Lib do Jogo
 #define targetLibName OBFUSCATE("libil2cpp.so")
 
 struct MemPatches {
@@ -21,6 +19,27 @@ struct MemPatches {
     MemoryPatch slowMotion;
     MemoryPatch superSpeed;
 } gPatches;
+
+// --- FUNÇÃO MANUAL PARA ENCONTRAR A LIB (SEM DEPENDER DE HEADERS) ---
+uintptr_t get_lib_address(const char* lib_name) {
+    uintptr_t addr = 0;
+    char line[1024];
+    
+    // Abre o mapa de memória do jogo
+    FILE *fp = fopen("/proc/self/maps", "r");
+    if (fp) {
+        while (fgets(line, sizeof(line), fp)) {
+            // Procura pela linha que tem o nome da lib
+            if (strstr(line, lib_name)) {
+                // Converte o endereço inicial (Hex) para número
+                addr = (uintptr_t)strtoul(line, NULL, 16);
+                break;
+            }
+        }
+        fclose(fp);
+    }
+    return addr;
+}
 
 // --- BOTÕES DO MENU ---
 jobjectArray GetFeatureList(JNIEnv *env, jobject context) {
@@ -56,15 +75,14 @@ void Changes(JNIEnv *env, jclass clazz, jobject obj, jint featNum, jstring featN
     }
 }
 
-// --- THREAD DE INJEÇÃO (CORRIGIDA) ---
+// --- THREAD DE INJEÇÃO ---
 void *hack_thread(void *) {
     
-    // 2. CORREÇÃO DA BUSCA: Usamos getLibraryBase que é universal
-    // Retorna o endereço direto (número) em vez de um Struct complexo
     uintptr_t il2cppBase = 0;
     
+    // Usa nossa função manual para esperar a lib carregar
     do {
-        il2cppBase = getLibraryBase(targetLibName);
+        il2cppBase = get_lib_address("libil2cpp.so"); // Nome sem ofuscação aqui para a busca manual funcionar melhor com strstr
         sleep(1);
     } while (il2cppBase == 0);
 
