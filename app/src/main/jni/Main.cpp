@@ -1,8 +1,13 @@
 #include <jni.h>
+#include <errno.h>
 #include <pthread.h>
+#include <unistd.h>
+
+// Bibliotecas do Template (Nomes corrigidos baseados nas fotos)
 #include "Includes/Logger.h"
 #include "Includes/obfuscate.h"
-#include "KittyMemory/MemoryPatch.h"
+#include "Includes/Utils.hpp" 
+#include "KittyMemory/MemoryPatch.hpp" 
 #include "Menu/Menu.hpp"
 
 // Define a Lib do Jogo
