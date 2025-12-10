@@ -1,27 +1,25 @@
 LOCAL_PATH := $(call my-dir)
 include $(CLEAR_ARS)
 
-# Nome do arquivo final (.so)
 LOCAL_MODULE := ModMenu
 
-# --- ONDE PROCURAR OS ARQUIVOS (.h) ---
-# Aqui dizemos: "Olhe dentro destas pastas!"
+# --- 1. Onde procurar os arquivos de cabeçalho (.h) ---
+# Adiciona a raiz (jni) para que possamos chamar "KittyMemory/..."
 LOCAL_C_INCLUDES += $(LOCAL_PATH)
-LOCAL_C_INCLUDES += $(LOCAL_PATH)/KittyMemory
-LOCAL_C_INCLUDES += $(LOCAL_PATH)/Menu
 LOCAL_C_INCLUDES += $(LOCAL_PATH)/Includes
-LOCAL_C_INCLUDES += $(LOCAL_PATH)/And64InlineHook
+LOCAL_C_INCLUDES += $(LOCAL_PATH)/Menu
+LOCAL_C_INCLUDES += $(LOCAL_PATH)/KittyMemory
 
-# --- QUAIS ARQUIVOS COMPILAR (.cpp) ---
-# Aqui listamos todos os arquivos de código
+# --- 2. Lista Manual dos Arquivos (.cpp) ---
+# Isso garante que ele ache os arquivos sem depender de wildcards
 LOCAL_SRC_FILES := Main.cpp \
-                   KittyMemory/MemoryPatch.cpp \
-                   KittyMemory/Utils.cpp \
-                   Menu/Menu.cpp \
+                   Includes/Logger.cpp \
                    Includes/Utils.cpp \
-                   Includes/Logger.cpp
+                   Menu/Menu.cpp \
+                   KittyMemory/MemoryPatch.cpp \
+                   KittyMemory/Utils.cpp
 
-# Bibliotecas do sistema Android necessárias
+# --- 3. Bibliotecas do Sistema ---
 LOCAL_LDLIBS := -llog -landroid -lEGL -lGLESv2
 
 include $(BUILD_SHARED_LIBRARY)
