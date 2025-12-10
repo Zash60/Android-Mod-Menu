@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     
     - name: Configurar Android NDK
       uses: android-actions/setup-android@v2
@@ -18,7 +18,7 @@ jobs:
         ndk-build NDK_PROJECT_PATH=. APP_BUILD_SCRIPT=./jni/Android.mk APP_APPLICATION_MK=./jni/Application.mk
         
     - name: Upload do Arquivo Pronto
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: Lib-Compilada
         path: app/src/main/libs/armeabi-v7a/
