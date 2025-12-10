@@ -7,22 +7,23 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    # Atualizado para v4
     - uses: actions/checkout@v4
 
-    # --- CORREÇÃO: Instalar o NDK corretamente ---
+    # Configuração do NDK (Essencial para o comando ndk-build funcionar)
     - name: Configurar NDK
       uses: nttld/setup-ndk@v1
       with:
         ndk-version: r25c
         add-to-path: true
 
-    # --- Compilação ---
+    # Comando de Compilação
     - name: Compilar Biblioteca (.so)
       run: |
         cd app/src/main
         ndk-build NDK_PROJECT_PATH=. APP_BUILD_SCRIPT=./jni/Android.mk APP_APPLICATION_MK=./jni/Application.mk
 
-    # --- Enviar o arquivo para você baixar ---
+    # Atualizado para v4
     - name: Upload do Arquivo Pronto
       uses: actions/upload-artifact@v4
       with:
